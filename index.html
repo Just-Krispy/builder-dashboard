@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Builder Command Center</title>
+    <style>
+        :root {
+            --primary: #2d5a1b;
+            --primary-hover: #234713;
+            --accent: #8bc34a;
+            --bg: #f4f7f0;
+            --bg-alt: #ffffff;
+            --text: #1a2e1a;
+            --text-muted: #7a8a7a;
+            --border: #d0dcc0;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --error: #f44336;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: var(--bg-alt);
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+
+        .date {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: var(--bg-alt);
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .card h2 {
+            font-size: 1.3rem;
+            margin-bottom: 16px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .focus-task {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border: 2px solid var(--border);
+            transition: all 0.2s;
+        }
+
+        .focus-task:hover {
+            border-color: var(--accent);
+        }
+
+        .focus-task input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .focus-task.completed {
+            opacity: 0.6;
+            text-decoration: line-through;
+        }
+
+        .add-task {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .add-task input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.9rem;
+        }
+
+        .project {
+            margin-bottom: 16px;
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .project-name {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .project-status {
+            font-size: 0.85rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: var(--accent);
+            color: white;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            height: 24px;
+            background: var(--bg);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 8px;
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .win-entry {
+            padding: 12px;
+            background: var(--bg);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--success);
+        }
+
+        .win-date {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 6px;
+        }
+
+        .win-item {
+            display: flex;
+            align-items: start;
+            gap: 8px;
+            margin-bottom: 4px;
+            color: var(--text);
+        }
+
+        .win-item::before {
+            content: "✅";
+            flex-shrink: 0;
+        }
+
+        .add-win {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .add-win textarea {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .streak-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .stat {
+            text-align: center;
+            padding: 16px;
+            background: var(--bg);
+            border-radius: 8px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .goal-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            background: var(--bg);
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        .goal-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .goal-item.completed {
+            opacity: 0.6;
+        }
+
+        .goal-item.completed label {
+            text-decoration: line-through;
+        }
+
+        .delete-btn {
+            margin-left: auto;
+            background: var(--error);
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .delete-btn:hover {
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .streak-stats {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .two-col {
+            grid-column: span 2;
+        }
+
+        @media (max-width: 900px) {
+            .two-col {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 Builder Command Center</h1>
+            <div class="date" id="current-date"></div>
+        </header>
+
+        <div class="grid">
+            <!-- Today's Focus -->
+            <div class="card two-col">
+                <h2>🎯 Today's Focus</h2>
+                <div id="focus-tasks"></div>
+                <div class="add-task">
+                    <input type="text" id="new-task" placeholder="Add a task for today...">
+                    <button class="btn btn-small" onclick="addTask()">Add</button>
+                </div>
+            </div>
+
+            <!-- Streaks -->
+            <div class="card">
+                <h2>🔥 Streaks</h2>
+                <div class="streak-stats">
+                    <div class="stat">
+                        <div class="stat-value" id="current-streak">0</div>
+                        <div class="stat-label">Current</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="best-streak">0</div>
+                        <div class="stat-label">Best</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="total-days">0</div>
+                        <div class="stat-label">Total</div>
+                    </div>
+                </div>
+                <button class="btn" style="margin-top: 16px; width: 100%;" onclick="logShipDay()">✅ Logged Ship Today</button>
+            </div>
+
+            <!-- Active Projects -->
+            <div class="card full-width">
+                <h2>🚀 Active Projects</h2>
+                <div id="projects"></div>
+            </div>
+
+            <!-- Daily Wins -->
+            <div class="card full-width">
+                <h2>✅ Daily Wins</h2>
+                <div id="wins-log"></div>
+                <div class="add-win">
+                    <textarea id="new-win" placeholder="What did you ship today?"></textarea>
+                    <button class="btn" onclick="addWin()">Log Win</button>
+                </div>
+            </div>
+
+            <!-- Weekly Goals -->
+            <div class="card full-width">
+                <h2>📅 This Week's Goals</h2>
+                <div id="weekly-goals"></div>
+                <div class="add-task">
+                    <input type="text" id="new-goal" placeholder="Add a weekly goal...">
+                    <button class="btn btn-small" onclick="addGoal()">Add Goal</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize data structure
+        let data = {
+            tasks: [],
+            projects: [
+                { name: "Ship-Fast Components", progress: 80, status: "LIVE" },
+                { name: "Farm Credit Phase 2", progress: 30, status: "PENDING" },
+                { name: "Notion Templates", progress: 20, status: "PLANNING" },
+                { name: "Job Search", progress: 50, status: "ACTIVE" }
+            ],
+            wins: {},
+            goals: [],
+            streak: {
+                current: 0,
+                best: 0,
+                total: 0,
+                lastShipDate: null
+            }
+        };
+
+        // Load data from localStorage
+        function loadData() {
+            const saved = localStorage.getItem('builderDashboard');
+            if (saved) {
+                data = JSON.parse(saved);
+            }
+            render();
+        }
+
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem('builderDashboard', JSON.stringify(data));
+        }
+
+        // Set current date
+        function setDate() {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const today = new Date().toLocaleDateString('en-US', options);
+            document.getElementById('current-date').textContent = today;
+        }
+
+        // Render all sections
+        function render() {
+            renderTasks();
+            renderProjects();
+            renderWins();
+            renderGoals();
+            renderStreaks();
+        }
+
+        // Tasks
+        function renderTasks() {
+            const container = document.getElementById('focus-tasks');
+            container.innerHTML = data.tasks.map((task, index) => `
+                <div class="focus-task ${task.completed ? 'completed' : ''}">
+                    <input type="checkbox" ${task.completed ? 'checked' : ''} 
+                           onchange="toggleTask(${index})">
+                    <span>${task.text}</span>
+                    <button class="delete-btn" onclick="deleteTask(${index})">×</button>
+                </div>
+            `).join('');
+        }
+
+        function addTask() {
+            const input = document.getElementById('new-task');
+            const text = input.value.trim();
+            if (text) {
+                data.tasks.push({ text, completed: false });
+                input.value = '';
+                saveData();
+                render();
+            }
+        }
+
+        function toggleTask(index) {
+            data.tasks[index].completed = !data.tasks[index].completed;
+            saveData();
+            render();
+        }
+
+        function deleteTask(index) {
+            data.tasks.splice(index, 1);
+            saveData();
+            render();
+        }
+
+        // Projects
+        function renderProjects() {
+            const container = document.getElementById('projects');
+            container.innerHTML = data.projects.map(project => `
+                <div class="project">
+                    <div class="project-header">
+                        <span class="project-name">${project.name}</span>
+                        <span class="project-status">${project.status}</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${project.progress}%">
+                            ${project.progress}%
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Wins
+        function renderWins() {
+            const container = document.getElementById('wins-log');
+            const sortedDates = Object.keys(data.wins).sort().reverse();
+            const recent = sortedDates.slice(0, 5); // Show last 5 days
+            
+            container.innerHTML = recent.map(date => `
+                <div class="win-entry">
+                    <div class="win-date">${formatDate(date)}</div>
+                    ${data.wins[date].map(win => `
+                        <div class="win-item">${win}</div>
+                    `).join('')}
+                </div>
+            `).join('') || '<p style="color: var(--text-muted); text-align: center;">No wins logged yet. Start shipping! 🚀</p>';
+        }
+
+        function addWin() {
+            const textarea = document.getElementById('new-win');
+            const text = textarea.value.trim();
+            if (text) {
+                const today = getTodayKey();
+                if (!data.wins[today]) {
+                    data.wins[today] = [];
+                }
+                data.wins[today].push(text);
+                textarea.value = '';
+                saveData();
+                render();
+            }
+        }
+
+        function getTodayKey() {
+            const today = new Date();
+            return today.toISOString().split('T')[0];
+        }
+
+        function formatDate(dateStr) {
+            const date = new Date(dateStr + 'T00:00:00');
+            const options = { month: 'short', day: 'numeric', year: 'numeric' };
+            return date.toLocaleDateString('en-US', options);
+        }
+
+        // Goals
+        function renderGoals() {
+            const container = document.getElementById('weekly-goals');
+            container.innerHTML = data.goals.map((goal, index) => `
+                <div class="goal-item ${goal.completed ? 'completed' : ''}">
+                    <input type="checkbox" ${goal.completed ? 'checked' : ''} 
+                           onchange="toggleGoal(${index})">
+                    <label>${goal.text}</label>
+                    <button class="delete-btn" onclick="deleteGoal(${index})">×</button>
+                </div>
+            `).join('') || '<p style="color: var(--text-muted); text-align: center;">No weekly goals set. Add one above!</p>';
+        }
+
+        function addGoal() {
+            const input = document.getElementById('new-goal');
+            const text = input.value.trim();
+            if (text) {
+                data.goals.push({ text, completed: false });
+                input.value = '';
+                saveData();
+                render();
+            }
+        }
+
+        function toggleGoal(index) {
+            data.goals[index].completed = !data.goals[index].completed;
+            saveData();
+            render();
+        }
+
+        function deleteGoal(index) {
+            data.goals.splice(index, 1);
+            saveData();
+            render();
+        }
+
+        // Streaks
+        function renderStreaks() {
+            document.getElementById('current-streak').textContent = data.streak.current;
+            document.getElementById('best-streak').textContent = data.streak.best;
+            document.getElementById('total-days').textContent = data.streak.total;
+        }
+
+        function logShipDay() {
+            const today = getTodayKey();
+            const lastShip = data.streak.lastShipDate;
+            
+            if (lastShip === today) {
+                alert('Already logged a ship today! 🎉');
+                return;
+            }
+
+            const yesterday = getYesterdayKey();
+            
+            if (lastShip === yesterday || lastShip === null) {
+                // Continue or start streak
+                data.streak.current++;
+            } else {
+                // Streak broken, restart
+                data.streak.current = 1;
+            }
+
+            data.streak.total++;
+            data.streak.best = Math.max(data.streak.best, data.streak.current);
+            data.streak.lastShipDate = today;
+
+            saveData();
+            render();
+            alert(`🔥 Streak logged! Current: ${data.streak.current} days`);
+        }
+
+        function getYesterdayKey() {
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            return yesterday.toISOString().split('T')[0];
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && e.target.id === 'new-task') {
+                addTask();
+            } else if (e.key === 'Enter' && e.target.id === 'new-goal') {
+                addGoal();
+            } else if (e.key === 'Enter' && e.ctrlKey && e.target.id === 'new-win') {
+                addWin();
+            }
+        });
+
+        // Initialize on load
+        setDate();
+        loadData();
+    </script>
+</body>
+</html>
