@@ -176,10 +176,32 @@
             font-size: 0.85rem;
             padding: 4px 8px;
             border-radius: 4px;
-            background: var(--accent);
-            color: white;
+            border: 2px solid var(--border);
+            background: transparent;
+            color: var(--text);
             text-transform: uppercase;
             font-weight: 600;
+        }
+
+        /* Status-specific colors (accessible in both modes) */
+        .status-live {
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .status-pending {
+            border-color: var(--warning);
+            color: var(--warning);
+        }
+
+        .status-planning {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .status-active {
+            border-color: var(--accent);
+            color: var(--accent);
         }
 
         .progress-bar {
@@ -632,19 +654,22 @@
         // Projects
         function renderProjects() {
             const container = document.getElementById('projects');
-            container.innerHTML = data.projects.map(project => `
-                <div class="project">
-                    <div class="project-header">
-                        <span class="project-name">${project.name}</span>
-                        <span class="project-status">${project.status}</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${project.progress}%">
-                            ${project.progress}%
+            container.innerHTML = data.projects.map(project => {
+                const statusClass = `status-${project.status.toLowerCase()}`;
+                return `
+                    <div class="project">
+                        <div class="project-header">
+                            <span class="project-name">${project.name}</span>
+                            <span class="project-status ${statusClass}">${project.status}</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${project.progress}%">
+                                ${project.progress}%
+                            </div>
                         </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         // Wins
