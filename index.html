@@ -363,6 +363,28 @@
             }
         }
 
+        /* Focus and Goals Cards - Consistent Height */
+        .focus-goals-card {
+            display: flex;
+            flex-direction: column;
+            min-height: 400px;
+        }
+
+        .focus-goals-card h2 {
+            flex-shrink: 0;
+        }
+
+        .focus-goals-card .card-content {
+            flex: 1;
+            min-height: 200px;
+            margin-bottom: 16px;
+        }
+
+        .focus-goals-card .card-footer {
+            flex-shrink: 0;
+            margin-top: auto;
+        }
+
         /* Header Layout */
         .header-content {
             display: grid;
@@ -537,31 +559,35 @@
         </header>
 
         <div class="grid">
-            <!-- Today's Focus -->
-            <div class="card">
-                <h2>🎯 Today's Focus</h2>
-                <div id="focus-tasks"></div>
-                <div class="add-task">
-                    <input type="text" id="new-task" placeholder="Add a task for today...">
-                    <button class="btn btn-small" onclick="addTask()">Add</button>
-                </div>
-                <button class="btn" style="margin-top: 16px; width: 100%;" onclick="logShipDay()">✅ Log Ship Day</button>
-            </div>
-
-            <!-- This Week's Goals -->
-            <div class="card">
-                <h2>📅 This Week's Goals</h2>
-                <div id="weekly-goals"></div>
-                <div class="add-task">
-                    <input type="text" id="new-goal" placeholder="Add a weekly goal...">
-                    <button class="btn btn-small" onclick="addGoal()">Add Goal</button>
-                </div>
-            </div>
-
             <!-- Active Projects -->
             <div class="card full-width">
                 <h2>🚀 Active Projects</h2>
                 <div id="projects"></div>
+            </div>
+
+            <!-- Today's Focus -->
+            <div class="card focus-goals-card">
+                <h2>🎯 Today's Focus</h2>
+                <div id="focus-tasks" class="card-content"></div>
+                <div class="card-footer">
+                    <div class="add-task">
+                        <input type="text" id="new-task" placeholder="Add a task for today...">
+                        <button class="btn btn-small" onclick="addTask()">Add</button>
+                    </div>
+                    <button class="btn" style="margin-top: 12px; width: 100%;" onclick="logShipDay()">✅ Log Ship Day</button>
+                </div>
+            </div>
+
+            <!-- This Week's Goals -->
+            <div class="card focus-goals-card">
+                <h2>📅 This Week's Goals</h2>
+                <div id="weekly-goals" class="card-content"></div>
+                <div class="card-footer">
+                    <div class="add-task">
+                        <input type="text" id="new-goal" placeholder="Add a weekly goal...">
+                        <button class="btn btn-small" onclick="addGoal()">Add Goal</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
