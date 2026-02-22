@@ -19,6 +19,21 @@
             --error: #f44336;
         }
 
+        /* Dark Mode */
+        body.dark-mode {
+            --primary: #8bc34a;
+            --primary-hover: #a5d863;
+            --accent: #c5e1a5;
+            --bg: #1a1a1a;
+            --bg-alt: #2d2d2d;
+            --text: #e8e8e8;
+            --text-muted: #a0a0a0;
+            --border: #404040;
+            --success: #66bb6a;
+            --warning: #ffa726;
+            --error: #ef5350;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -325,13 +340,63 @@
                 grid-column: span 1;
             }
         }
+
+        /* Dark Mode Toggle */
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-left h1 {
+            margin: 0;
+        }
+
+        .dark-mode-toggle {
+            background: var(--bg);
+            border: 2px solid var(--border);
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            user-select: none;
+        }
+
+        .dark-mode-toggle:hover {
+            border-color: var(--accent);
+            transform: scale(1.05);
+        }
+
+        .dark-mode-toggle:active {
+            transform: scale(0.95);
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>🚀 Builder Command Center</h1>
-            <div class="date" id="current-date"></div>
+            <div class="header-content">
+                <div class="header-left">
+                    <h1>🚀 Builder Command Center</h1>
+                    <div class="date" id="current-date"></div>
+                </div>
+                <div class="dark-mode-toggle" onclick="toggleDarkMode()" title="Toggle dark mode">
+                    <span id="theme-icon">🌙</span>
+                    <span id="theme-text">Dark</span>
+                </div>
+            </div>
         </header>
 
         <div class="grid">
@@ -616,6 +681,36 @@
             return yesterday.toISOString().split('T')[0];
         }
 
+        // Dark Mode Toggle
+        function toggleDarkMode() {
+            const body = document.body;
+            const isDark = body.classList.toggle('dark-mode');
+            
+            // Update button text and icon
+            const icon = document.getElementById('theme-icon');
+            const text = document.getElementById('theme-text');
+            
+            if (isDark) {
+                icon.textContent = '☀️';
+                text.textContent = 'Light';
+            } else {
+                icon.textContent = '🌙';
+                text.textContent = 'Dark';
+            }
+            
+            // Save preference
+            localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
+        }
+
+        function loadDarkMode() {
+            const darkMode = localStorage.getItem('darkMode');
+            if (darkMode === 'enabled') {
+                document.body.classList.add('dark-mode');
+                document.getElementById('theme-icon').textContent = '☀️';
+                document.getElementById('theme-text').textContent = 'Light';
+            }
+        }
+
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && e.target.id === 'new-task') {
@@ -630,6 +725,7 @@
         // Initialize on load
         setDate();
         loadData();
+        loadDarkMode();
     </script>
 </body>
 </html>
