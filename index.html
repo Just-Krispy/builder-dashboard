@@ -341,16 +341,54 @@
             }
         }
 
-        /* Dark Mode Toggle */
+        /* Header Layout */
         .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            display: grid;
+            grid-template-columns: 1fr auto auto;
             gap: 20px;
+            align-items: center;
         }
 
         .header-left h1 {
             margin: 0;
+        }
+
+        /* Compact Streaks in Header */
+        .header-streaks {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            background: var(--bg);
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 2px solid var(--border);
+        }
+
+        .mini-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .mini-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            line-height: 1;
+        }
+
+        .mini-stat-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .streak-divider {
+            width: 1px;
+            height: 30px;
+            background: var(--border);
         }
 
         .dark-mode-toggle {
@@ -378,8 +416,13 @@
 
         @media (max-width: 768px) {
             .header-content {
-                flex-direction: column;
-                align-items: flex-start;
+                grid-template-columns: 1fr;
+            }
+
+            .header-streaks {
+                order: 3;
+                width: 100%;
+                justify-content: space-around;
             }
         }
     </style>
@@ -392,6 +435,22 @@
                     <h1>🚀 Builder Command Center</h1>
                     <div class="date" id="current-date"></div>
                 </div>
+                <div class="header-streaks">
+                    <div class="mini-stat">
+                        <div class="mini-stat-value" id="current-streak-mini">0</div>
+                        <div class="mini-stat-label">Current</div>
+                    </div>
+                    <div class="streak-divider"></div>
+                    <div class="mini-stat">
+                        <div class="mini-stat-value" id="best-streak-mini">0</div>
+                        <div class="mini-stat-label">Best</div>
+                    </div>
+                    <div class="streak-divider"></div>
+                    <div class="mini-stat">
+                        <div class="mini-stat-value" id="total-days-mini">0</div>
+                        <div class="mini-stat-label">Total</div>
+                    </div>
+                </div>
                 <div class="dark-mode-toggle" onclick="toggleDarkMode()" title="Toggle dark mode">
                     <span id="theme-icon">🌙</span>
                     <span id="theme-text">Dark</span>
@@ -401,33 +460,24 @@
 
         <div class="grid">
             <!-- Today's Focus -->
-            <div class="card two-col">
+            <div class="card">
                 <h2>🎯 Today's Focus</h2>
                 <div id="focus-tasks"></div>
                 <div class="add-task">
                     <input type="text" id="new-task" placeholder="Add a task for today...">
                     <button class="btn btn-small" onclick="addTask()">Add</button>
                 </div>
+                <button class="btn" style="margin-top: 16px; width: 100%;" onclick="logShipDay()">✅ Log Ship Day</button>
             </div>
 
-            <!-- Streaks -->
+            <!-- This Week's Goals -->
             <div class="card">
-                <h2>🔥 Streaks</h2>
-                <div class="streak-stats">
-                    <div class="stat">
-                        <div class="stat-value" id="current-streak">0</div>
-                        <div class="stat-label">Current</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-value" id="best-streak">0</div>
-                        <div class="stat-label">Best</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-value" id="total-days">0</div>
-                        <div class="stat-label">Total</div>
-                    </div>
+                <h2>📅 This Week's Goals</h2>
+                <div id="weekly-goals"></div>
+                <div class="add-task">
+                    <input type="text" id="new-goal" placeholder="Add a weekly goal...">
+                    <button class="btn btn-small" onclick="addGoal()">Add Goal</button>
                 </div>
-                <button class="btn" style="margin-top: 16px; width: 100%;" onclick="logShipDay()">✅ Logged Ship Today</button>
             </div>
 
             <!-- Active Projects -->
@@ -436,24 +486,14 @@
                 <div id="projects"></div>
             </div>
 
-            <!-- Daily Wins -->
+            <!-- Daily Idea -->
             <div class="card full-width">
-                <h2>✅ Daily Wins</h2>
-                <div id="wins-log"></div>
-                <div class="add-win">
-                    <textarea id="new-win" placeholder="What did you ship today?"></textarea>
-                    <button class="btn" onclick="addWin()">Log Win</button>
+                <h2>💡 Daily Idea</h2>
+                <div id="daily-idea" style="padding: 16px; background: var(--bg); border-radius: 8px; border-left: 4px solid var(--accent); margin-bottom: 16px;">
+                    <p style="font-style: italic; color: var(--text-muted); margin-bottom: 8px;" id="idea-text">Click "New Idea" for creative inspiration!</p>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);" id="idea-category"></p>
                 </div>
-            </div>
-
-            <!-- Weekly Goals -->
-            <div class="card full-width">
-                <h2>📅 This Week's Goals</h2>
-                <div id="weekly-goals"></div>
-                <div class="add-task">
-                    <input type="text" id="new-goal" placeholder="Add a weekly goal...">
-                    <button class="btn btn-small" onclick="addGoal()">Add Goal</button>
-                </div>
+                <button class="btn" style="width: 100%;" onclick="generateIdea()">🎲 New Idea</button>
             </div>
         </div>
     </div>
@@ -503,7 +543,6 @@
         function render() {
             renderTasks();
             renderProjects();
-            renderWins();
             renderGoals();
             renderStreaks();
         }
@@ -642,9 +681,9 @@
 
         // Streaks
         function renderStreaks() {
-            document.getElementById('current-streak').textContent = data.streak.current;
-            document.getElementById('best-streak').textContent = data.streak.best;
-            document.getElementById('total-days').textContent = data.streak.total;
+            document.getElementById('current-streak-mini').textContent = data.streak.current;
+            document.getElementById('best-streak-mini').textContent = data.streak.best;
+            document.getElementById('total-days-mini').textContent = data.streak.total;
         }
 
         function logShipDay() {
@@ -679,6 +718,77 @@
             const yesterday = new Date();
             yesterday.setDate(yesterday.getDate() - 1);
             return yesterday.toISOString().split('T')[0];
+        }
+
+        // Daily Idea Generator
+        function generateIdea() {
+            const ideas = {
+                projects: [
+                    "Build a micro-SaaS for a niche industry you know",
+                    "Create a Chrome extension that solves your daily annoyance",
+                    "Ship a weekend project: URL shortener with analytics",
+                    "Build a personal finance dashboard with API integrations",
+                    "Create a Notion template marketplace competitor",
+                    "Develop a CLI tool that automates your workflow",
+                    "Build a GitHub action that saves developers time",
+                    "Create an AI-powered writing assistant for specific use case",
+                    "Ship a landing page builder with no-code features",
+                    "Build a real-time collaboration tool for remote teams",
+                    "Create a productivity tracker with gamification",
+                    "Develop a code snippet manager with AI search",
+                    "Build a job board aggregator for your industry",
+                    "Create a portfolio generator from GitHub repos",
+                    "Ship a simple analytics alternative to Google Analytics"
+                ],
+                skills: [
+                    "Learn Rust by building a CLI tool this weekend",
+                    "Master TypeScript by converting a JS project",
+                    "Study system design through LeetCode patterns",
+                    "Level up SQL with complex query challenges",
+                    "Learn Docker by containerizing your projects",
+                    "Master Git workflows: rebase, cherry-pick, bisect",
+                    "Study accessibility (a11y) and WCAG standards",
+                    "Learn WebSockets by building real-time feature",
+                    "Master CSS Grid and Flexbox through rebuilds",
+                    "Study API design patterns and best practices",
+                    "Learn testing: unit, integration, e2e",
+                    "Master performance optimization techniques",
+                    "Study design patterns through refactoring",
+                    "Learn GraphQL by building an API",
+                    "Master state management (Redux, Zustand, Jotai)"
+                ],
+                learning: [
+                    "Read 'The Pragmatic Programmer' - 20 pages today",
+                    "Watch a tech talk on your weakest skill area",
+                    "Study a competitor's product - what makes it great?",
+                    "Review a well-architected open-source project",
+                    "Take ISTQB CT-AI certification practice test",
+                    "Learn from a failed startup's postmortem",
+                    "Study pricing strategies of successful SaaS products",
+                    "Analyze top Product Hunt launches this month",
+                    "Research growth tactics from indie hackers",
+                    "Study UX patterns from your favorite apps",
+                    "Learn copywriting by rewriting landing pages",
+                    "Research SEO by auditing successful blogs",
+                    "Study email marketing through teardowns",
+                    "Learn from builder study: what's trending?",
+                    "Reverse-engineer a feature you admire"
+                ]
+            };
+
+            const categories = ['projects', 'skills', 'learning'];
+            const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+            const categoryIdeas = ideas[randomCategory];
+            const randomIdea = categoryIdeas[Math.floor(Math.random() * categoryIdeas.length)];
+
+            const categoryEmojis = {
+                projects: '🚀 Project Idea',
+                skills: '🛠️ Skill to Learn',
+                learning: '📚 Learning Opportunity'
+            };
+
+            document.getElementById('idea-text').textContent = randomIdea;
+            document.getElementById('idea-category').textContent = categoryEmojis[randomCategory];
         }
 
         // Dark Mode Toggle
