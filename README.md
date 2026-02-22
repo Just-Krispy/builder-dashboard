@@ -7,10 +7,11 @@
 ## Features
 
 ✅ **Today's Focus** — Track daily tasks with checkboxes  
+📅 **This Week's Goals** — Manage weekly objectives side-by-side  
 🚀 **Active Projects** — Visual progress bars for all projects  
-✅ **Daily Wins Log** — Record what you shipped each day  
-🔥 **Streak Tracker** — Track consecutive days shipping  
-📅 **Weekly Goals** — Manage weekly objectives  
+💡 **Daily Idea Generator** — Get creative project/skill/learning suggestions  
+🔥 **Streak Tracker** — Compact header display of ship streaks  
+🌙 **Dark Mode** — Toggle with persistent preference  
 💾 **Auto-Save** — Everything persists via localStorage
 
 ---
@@ -18,10 +19,11 @@
 ## How to Use
 
 1. **Open `index.html`** in your browser
-2. **Add tasks** for today's focus
-3. **Log wins** at end of day (what you shipped)
-4. **Click "Logged Ship Today"** to maintain your streak
-5. **Set weekly goals** to stay on track
+2. **Add tasks** for today's focus (left card)
+3. **Set weekly goals** for the week (right card)
+4. **Click "Log Ship Day"** to maintain your streak (header shows stats)
+5. **Generate daily ideas** for creative inspiration (projects/skills/learning)
+6. **Toggle dark mode** for your preferred viewing experience
 
 ---
 
@@ -29,7 +31,6 @@
 
 - `Enter` in task input → Add task
 - `Enter` in goal input → Add goal
-- `Ctrl+Enter` in win input → Add win
 
 ---
 
@@ -99,15 +100,17 @@ projects: [
 
 **Psychology:**
 - Visual progress bars = motivation boost
-- Daily wins logging = celebrate small victories
+- Daily idea generator = combat creative blocks
 - Streak tracking = gamification (don't break the chain!)
-- Weekly goals = focused direction
+- Side-by-side focus & goals = at-a-glance priorities
+- Dark mode = accessibility & eye comfort
 
 **Built on Ship-Fast Components philosophy:**
 - Vanilla HTML/CSS/JS (no framework)
 - Zero dependencies
 - Works everywhere
 - Copy-paste ready
+- Accessible design (WCAG compliant)
 
 ---
 
