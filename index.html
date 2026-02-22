@@ -549,21 +549,19 @@
                 </div>
                 <div class="header-streaks">
                     <div class="mini-stat">
-                        <div class="mini-stat-value" id="current-streak-mini">0</div>
+                        <div class="mini-stat-value" id="projects-current">0</div>
                         <div class="mini-stat-label">Current</div>
                     </div>
                     <div class="streak-divider"></div>
                     <div class="mini-stat">
-                        <div class="mini-stat-value" id="best-streak-mini">0</div>
-                        <div class="mini-stat-label">Best</div>
+                        <div class="mini-stat-value" id="projects-completed">0</div>
+                        <div class="mini-stat-label">Completed</div>
                     </div>
                     <div class="streak-divider"></div>
                     <div class="mini-stat">
-                        <div class="mini-stat-value" id="total-days-mini">0</div>
+                        <div class="mini-stat-value" id="projects-total">0</div>
                         <div class="mini-stat-label">Total</div>
                     </div>
-                    <div class="streak-divider"></div>
-                    <button class="btn btn-small" onclick="logShipDay()" style="white-space: nowrap;">✅ Ship</button>
                 </div>
                 <div class="dark-mode-toggle" onclick="toggleDarkMode()" title="Toggle dark mode">
                     <span id="theme-icon">🌙</span>
@@ -805,11 +803,21 @@
             render();
         }
 
-        // Streaks
+        // Project Stats
         function renderStreaks() {
-            document.getElementById('current-streak-mini').textContent = data.streak.current;
-            document.getElementById('best-streak-mini').textContent = data.streak.best;
-            document.getElementById('total-days-mini').textContent = data.streak.total;
+            const current = data.projects.filter(p => 
+                p.status !== 'LIVE' && p.progress < 100
+            ).length;
+            
+            const completed = data.projects.filter(p => 
+                p.status === 'LIVE' || p.progress === 100
+            ).length;
+            
+            const total = data.projects.length;
+            
+            document.getElementById('projects-current').textContent = current;
+            document.getElementById('projects-completed').textContent = completed;
+            document.getElementById('projects-total').textContent = total;
         }
 
         function logShipDay() {
